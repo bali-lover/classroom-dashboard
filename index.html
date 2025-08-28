@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학습 진도판 관리 시스템</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #36d1dc, #5b86e5);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .features {
+            margin-top: 40px;
+            text-align: left;
+            border-top: 1px solid #eee;
+            padding-top: 30px;
+        }
+
+        .features h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .features ul {
+            list-style: none;
+            color: #666;
+        }
+
+        .features li {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .github-info {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .github-link {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .github-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .btn {
+                padding: 12px 25px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📊</div>
+        <h1>학습 진도판 관리 시스템</h1>
+        <p class="subtitle">실시간 학습 진도 모니터링 및 관리</p>
+        
+        <div class="button-group">
+            <a href="dashboard.html" class="btn btn-primary">
+                <span>👨‍🏫</span>
+                선생님용 대시보드
+            </a>
+            <a href="student.html" class="btn btn-secondary">
+                <span>👨‍🎓</span>
+                학생용 진도판
+            </a>
+            <a href="check-setup.html" class="btn btn-info">
+                <span>⚙️</span>
+                설정 확인 도구
+            </a>
+        </div>
+
+        <div class="features">
+            <h3>🚀 주요 기능</h3>
+            <ul>
+                <li>실시간 학습 진도 모니터링</li>
+                <li>개별/조별 학습 모드 지원</li>
+                <li>미션 관리 및 순서 변경</li>
+                <li>학생 메모 및 도움 요청 관리</li>
+                <li>QR 코드 기반 간편 접속</li>
+                <li>실시간 메시지 전송</li>
+            </ul>
+        </div>
+
+        <div class="github-info">
+            <p><strong>GitHub Pages로 호스팅됨</strong></p>
+            <p>Firebase 기반 실시간 연동 시스템</p>
+            <p>교육용 무료 도구</p>
+        </div>
+    </div>
+
+    <script>
+        // GitHub Pages 환경 체크
+        console.log('🚀 GitHub Pages에서 실행 중입니다.');
+        console.log('📍 현재 URL:', window.location.href);
+        
+        // 각 페이지 URL 출력 (개발자가 확인용)
+        const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
+        console.log('📄 대시보드 URL:', baseUrl + 'dashboard.html');
+        console.log('📄 학생용 URL:', baseUrl + 'student.html');
+        console.log('📄 설정확인 URL:', baseUrl + 'check-setup.html');
+    </script>
+</body>
+</html>
