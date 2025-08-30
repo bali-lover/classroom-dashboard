@@ -1672,7 +1672,6 @@
             const savedConfig = loadSavedFirebaseConfig();
             if (savedConfig) {
                 document.getElementById('firebaseApiKey').value = savedConfig.apiKey || '';
-                document.getElementById('firebaseDatabaseURL').value = savedConfig.databaseURL || '';
                 document.getElementById('firebaseProjectId').value = savedConfig.projectId || '';
             }
             
@@ -1755,7 +1754,8 @@
         function getFirebaseConfigFromForm() {
             const apiKey = document.getElementById('firebaseApiKey').value.trim();
             const projectId = document.getElementById('firebaseProjectId').value.trim();
-            const databaseURL = document.getElementById('firebaseDatabaseURL').value.trim();
+            // Database URL 자동 생성
+            const databaseURL = `https://${projectId}-default-rtdb.asia-southeast1.firebasedatabase.app/`;
             
             return {
                 apiKey: apiKey,
