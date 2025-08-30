@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://chart.googleapis.com; connect-src 'self' https:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://api.qrserver.com; connect-src 'self' https:;">
     <title>학습 진도판 관리 시스템</title>
     <style>
         * {
@@ -2612,16 +2612,26 @@
 
             qrContainer.innerHTML = '';
             
-            // Google Charts QR API 사용 (QRCode 라이브러리 대신)
+            // QR.js API 사용 (더 안정적)
             const qrSize = 250;
             const encodedUrl = encodeURIComponent(url);
-            const qrApiUrl = `https://chart.googleapis.com/chart?chs=${qrSize}x${qrSize}&cht=qr&chl=${encodedUrl}`;
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodedUrl}`;
             
             const qrImg = document.createElement('img');
             qrImg.src = qrApiUrl;
             qrImg.style.width = qrSize + 'px';
             qrImg.style.height = qrSize + 'px';
             qrImg.alt = 'QR Code';
+            qrImg.onerror = function() {
+                // API 실패시 텍스트 링크로 대체
+                qrContainer.innerHTML = `
+                    <div style="text-align: center; padding: 50px;">
+                        <p>QR 코드 생성에 실패했습니다.</p>
+                        <p>아래 링크를 직접 사용하세요:</p>
+                        <a href="${url}" target="_blank" style="color: #007bff; word-break: break-all;">${url}</a>
+                    </div>
+                `;
+            };
             qrContainer.appendChild(qrImg);
 
             qrUrlElement.textContent = url;
