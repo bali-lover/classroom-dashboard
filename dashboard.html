@@ -1398,17 +1398,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Database URL</label>
-                    <input type="text" class="form-input" id="firebaseDatabaseURL" placeholder="https://your-project-default-rtdb.region.firebasedatabase.app/">
-                </div>
-
-                <div class="form-group">
                     <p style="font-size: 14px; color: #6b7280; background: #f0fdf4; padding: 10px; border-radius: 6px; border-left: 4px solid #22c55e;">
                         ✅ <strong>자동 설정 항목:</strong><br>
+                        • Database URL: Project ID로 자동 생성<br>
                         • Auth Domain: Project ID로 자동 생성<br>
                         • Storage Bucket: Project ID로 자동 생성<br>
                         • Messaging Sender ID: 기본값 사용<br>
                         • App ID: 기본값 사용
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <p style="font-size: 14px; color: #dc2626; background: #fef2f2; padding: 10px; border-radius: 6px; border-left: 4px solid #dc2626;">
+                        ⚠️ <strong>Firebase 프로젝트 생성 시 중요:</strong><br>
+                        <strong>Realtime Database 지역을 반드시 "아시아 남동부(asia-southeast1)"로 선택하세요!</strong><br>
+                        다른 지역 선택 시 자동 생성된 URL이 작동하지 않을 수 있습니다.
                     </p>
                 </div>
 
@@ -4088,22 +4092,22 @@
             // localStorage에서 기존 설정 불러오기
             const savedApiKey = localStorage.getItem('firebase_apiKey') || '';
             const savedProjectId = localStorage.getItem('firebase_projectId') || '';
-            const savedDatabaseUrl = localStorage.getItem('firebase_databaseUrl') || '';
             
             document.getElementById('firebaseApiKey').value = savedApiKey;
             document.getElementById('firebaseProjectId').value = savedProjectId;
-            document.getElementById('firebaseDatabaseURL').value = savedDatabaseUrl;
         }
         
         function saveFirebaseConfig() {
             const apiKey = document.getElementById('firebaseApiKey').value.trim();
             const projectId = document.getElementById('firebaseProjectId').value.trim();
-            const databaseUrl = document.getElementById('firebaseDatabaseURL').value.trim();
             
-            if (!apiKey || !projectId || !databaseUrl) {
-                alert('모든 필드를 입력해주세요.');
+            if (!apiKey || !projectId) {
+                alert('API Key와 Project ID를 입력해주세요.');
                 return;
             }
+            
+            // Database URL 자동 생성 (아시아 남동부 지역)
+            const databaseUrl = `https://${projectId}-default-rtdb.asia-southeast1.firebasedatabase.app/`;
             
             // localStorage에 설정 저장
             localStorage.setItem('firebase_apiKey', apiKey);
@@ -4114,7 +4118,7 @@
             const authDomain = `${projectId}.firebaseapp.com`;
             const storageBucket = `${projectId}.firebasestorage.app`;
             
-            alert(`Firebase 설정이 저장되었습니다!\n\n자동 생성된 설정:\n• Auth Domain: ${authDomain}\n• Storage Bucket: ${storageBucket}\n\n페이지를 새로고침하여 새 설정을 적용하세요.`);
+            alert(`Firebase 설정이 저장되었습니다!\n\n자동 생성된 설정:\n• Database URL: ${databaseUrl}\n• Auth Domain: ${authDomain}\n• Storage Bucket: ${storageBucket}\n\n페이지를 새로고침하여 새 설정을 적용하세요.`);
             closeFirebaseConfigModal();
         }
 
