@@ -739,16 +739,14 @@
         // URL에서 Firebase 설정 가져오기 (먼저 시도)
         const urlFirebaseConfig = getFirebaseConfigFromUrl();
         
-        // Firebase 설정 (URL 우선, 없으면 기본값)
-        const firebaseConfig = urlFirebaseConfig || {
-          apiKey: "AIzaSyBV1IFHlWjQ6ftVmnhX74YITKWCdsjdZLM",
-          authDomain: "classroom-progress.firebaseapp.com",
-          databaseURL: "https://classroom-progress-default-rtdb.asia-southeast1.firebasedatabase.app/",
-          projectId: "classroom-progress",
-          storageBucket: "classroom-progress.firebasestorage.app",
-          messagingSenderId: "307617869427",
-          appId: "1:307617869427:web:20a35dc705cc3fc3854406"
-        };
+        // Firebase 설정 (URL에서만 로드, 기본값 없음)
+        const firebaseConfig = urlFirebaseConfig;
+        
+        if (!firebaseConfig) {
+          alert('❌ Firebase 설정이 필요합니다. QR 코드를 통해 접속해주세요.');
+          document.body.innerHTML = '<div style="text-align: center; padding: 50px; font-size: 18px;">❌ Firebase 설정이 필요합니다.<br><br>대시보드에서 생성된 QR 코드를 통해 접속해주세요.</div>';
+          throw new Error('Firebase 설정이 없습니다.');
+        }
 
         console.log('사용 중인 Firebase 설정:', urlFirebaseConfig ? 'URL에서 로드됨' : '기본 설정 사용', firebaseConfig.projectId);
 
