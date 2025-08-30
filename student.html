@@ -1316,6 +1316,7 @@
                 console.log('Firebase에서 미션 데이터 로드 중...');
                 
                 const result = await window.classProgressFunctions.getMissions(currentClassId);
+                console.log('getMissions 결과:', result);
                 
                 if (result.success) {
                     // 전체 미션 업데이트
