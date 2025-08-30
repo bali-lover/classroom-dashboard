@@ -417,17 +417,11 @@
 
         .progress-100 .student-number {
             color: black;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 2px 6px;
-            border-radius: 4px;
         }
         
         .progress-80 .student-number,
         .progress-60 .student-number {
             color: black;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 2px 6px;
-            border-radius: 4px;
         }
 
         .student-name {
@@ -516,6 +510,32 @@
         }
 
         .mission-section .function-title::before { content: "🎯"; }
+
+        /* 전체미션 스크롤 기능 추가 */
+        #all-mission-steps {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* 스크롤바 스타일링 */
+        #all-mission-steps::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #all-mission-steps::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        #all-mission-steps::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        #all-mission-steps::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
         .today-section .function-title::before { content: "✅"; }
 
         /* 미션 관리 UI */
@@ -787,7 +807,7 @@
             width: 100%;
             border: none;
             background: transparent;
-            font-size: 14px;
+            font-size: 18px;
             color: #374151;
             padding: 4px 0;
             outline: none;
@@ -970,6 +990,54 @@
         .form-input:focus, .form-select:focus, .form-textarea:focus {
             outline: none;
             border-color: #3b82f6;
+        }
+
+        .unread-badge {
+            background: #ef4444;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+        }
+
+        .message-item {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .message-item:hover {
+            background: #f1f5f9;
+            border-color: #d1d5db;
+        }
+
+
+        .message-content {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #374151;
+        }
+
+        .message-timestamp {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            padding: 20px;
         }
 
         .form-textarea {
@@ -1324,8 +1392,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Auth Domain</label>
-                    <input type="text" class="form-input" id="firebaseAuthDomain" placeholder="your-project.firebaseapp.com">
+                    <label class="form-label">Project ID</label>
+                    <input type="text" class="form-input" id="firebaseProjectId" placeholder="your-project-id">
                 </div>
 
                 <div class="form-group">
@@ -1334,23 +1402,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Project ID</label>
-                    <input type="text" class="form-input" id="firebaseProjectId" placeholder="your-project-id">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Storage Bucket</label>
-                    <input type="text" class="form-input" id="firebaseStorageBucket" placeholder="your-project.firebasestorage.app">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Messaging Sender ID</label>
-                    <input type="text" class="form-input" id="firebaseMessagingSenderId" placeholder="123456789012">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">App ID</label>
-                    <input type="text" class="form-input" id="firebaseAppId" placeholder="1:123456789012:web:abcdef123456789">
+                    <p style="font-size: 14px; color: #6b7280; background: #f0fdf4; padding: 10px; border-radius: 6px; border-left: 4px solid #22c55e;">
+                        ✅ <strong>자동 설정 항목:</strong><br>
+                        • Auth Domain: Project ID로 자동 생성<br>
+                        • Storage Bucket: Project ID로 자동 생성<br>
+                        • Messaging Sender ID: 기본값 사용<br>
+                        • App ID: 기본값 사용
+                    </p>
                 </div>
 
                 <div id="firebaseTestResult" style="margin-top: 15px; padding: 10px; border-radius: 6px; display: none;"></div>
@@ -1442,6 +1500,31 @@
         </div>
     </div>
 
+    <!-- 학생 메시지 모달 -->
+    <div class="modal-overlay" id="studentMessageModal" style="display: none;">
+        <div class="modal" style="width: 90%; max-width: 700px; max-height: 80vh;">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <span id="studentMessageTitle">학생 메시지</span>
+                    <span class="unread-badge" id="unreadMessageCount" style="display: none;">0</span>
+                </h3>
+                <button class="close-btn" onclick="closeStudentMessageModal()">&times;</button>
+            </div>
+            
+            <div class="modal-step">
+                <div class="form-group">
+                    <div id="studentMessagesList" style="max-height: 400px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px;">
+                        <div class="empty-message">메시지를 불러오는 중...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeStudentMessageModal()">닫기</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase 설정 -->
     <script type="module">
         // Firebase 설정과 함수들을 직접 포함
@@ -1477,7 +1560,15 @@
 
         // Firebase 초기화 상태
         let isFirebaseInitialized = false;
-        let firebaseConfig = null;
+        let firebaseConfig = {
+          apiKey: "AIzaSyBV1IFHlWjQ6ftVmnhX74YITKWCdsjdZLM",
+          authDomain: "classroom-progress.firebaseapp.com",
+          databaseURL: "https://classroom-progress-default-rtdb.asia-southeast1.firebasedatabase.app/",
+          projectId: "classroom-progress",
+          storageBucket: "classroom-progress.firebasestorage.app",
+          messagingSenderId: "307617869427",
+          appId: "1:307617869427:web:20a35dc705cc3fc3854406"
+        };
 
         // Firebase 동적 초기화 함수
         async function initializeFirebase(config) {
@@ -1545,22 +1636,21 @@
 
         // 페이지 로드 시 Firebase 자동 초기화
         async function autoInitializeFirebase() {
-            const savedConfig = loadSavedFirebaseConfig();
-            if (savedConfig) {
-                console.log('💾 저장된 Firebase 설정 발견, 자동 초기화 중...');
-                const result = await initializeFirebase(savedConfig);
-                if (result.success) {
-                    updateFirebaseStatus('설정 완료', 'success');
-                } else {
-                    updateFirebaseStatus('설정 오류: ' + result.error, 'error');
-                }
+            let savedConfig = loadSavedFirebaseConfig();
+            if (!savedConfig) {
+                // 저장된 설정이 없으면 기본 설정 사용
+                savedConfig = firebaseConfig;
+                console.log('🔧 기본 Firebase 설정 사용');
             } else {
-                console.log('⚙️ Firebase 설정이 없습니다. 설정 모달을 열어주세요.');
-                updateFirebaseStatus('Firebase 설정 필요', 'warning');
-                // 자동으로 설정 모달 열기
-                setTimeout(() => {
-                    openFirebaseConfigModal();
-                }, 2000);
+                console.log('💾 저장된 Firebase 설정 발견');
+            }
+            
+            console.log('Firebase 자동 초기화 중...');
+            const result = await initializeFirebase(savedConfig);
+            if (result.success) {
+                updateFirebaseStatus('설정 완료', 'success');
+            } else {
+                updateFirebaseStatus('설정 오류: ' + result.error, 'error');
             }
         }
 
@@ -1578,24 +1668,20 @@
         // Firebase 설정 모달 관련 함수들
         
         // Firebase 설정 모달 열기
-        function openFirebaseConfigModal() {
+        window.openFirebaseConfigModal = function openFirebaseConfigModal() {
             // 저장된 설정이 있으면 폼에 로드
             const savedConfig = loadSavedFirebaseConfig();
             if (savedConfig) {
                 document.getElementById('firebaseApiKey').value = savedConfig.apiKey || '';
-                document.getElementById('firebaseAuthDomain').value = savedConfig.authDomain || '';
                 document.getElementById('firebaseDatabaseURL').value = savedConfig.databaseURL || '';
                 document.getElementById('firebaseProjectId').value = savedConfig.projectId || '';
-                document.getElementById('firebaseStorageBucket').value = savedConfig.storageBucket || '';
-                document.getElementById('firebaseMessagingSenderId').value = savedConfig.messagingSenderId || '';
-                document.getElementById('firebaseAppId').value = savedConfig.appId || '';
             }
             
             document.getElementById('firebaseConfigModal').style.display = 'block';
         }
 
         // Firebase 연결 테스트
-        async function testFirebaseConnection() {
+        window.testFirebaseConnection = async function testFirebaseConnection() {
             const config = getFirebaseConfigFromForm();
             
             if (!validateFirebaseConfig(config)) {
@@ -1633,7 +1719,7 @@
         }
 
         // Firebase 설정 저장
-        async function saveFirebaseConfig() {
+        window.saveFirebaseConfig = async function saveFirebaseConfig() {
             const config = getFirebaseConfigFromForm();
             
             if (!validateFirebaseConfig(config)) {
@@ -1668,20 +1754,24 @@
 
         // 폼에서 Firebase 설정 가져오기
         function getFirebaseConfigFromForm() {
+            const apiKey = document.getElementById('firebaseApiKey').value.trim();
+            const projectId = document.getElementById('firebaseProjectId').value.trim();
+            const databaseURL = document.getElementById('firebaseDatabaseURL').value.trim();
+            
             return {
-                apiKey: document.getElementById('firebaseApiKey').value.trim(),
-                authDomain: document.getElementById('firebaseAuthDomain').value.trim(),
-                databaseURL: document.getElementById('firebaseDatabaseURL').value.trim(),
-                projectId: document.getElementById('firebaseProjectId').value.trim(),
-                storageBucket: document.getElementById('firebaseStorageBucket').value.trim(),
-                messagingSenderId: document.getElementById('firebaseMessagingSenderId').value.trim(),
-                appId: document.getElementById('firebaseAppId').value.trim()
+                apiKey: apiKey,
+                authDomain: `${projectId}.firebaseapp.com`, // 자동 생성
+                databaseURL: databaseURL,
+                projectId: projectId,
+                storageBucket: `${projectId}.firebasestorage.app`, // 자동 생성
+                messagingSenderId: "307617869427", // 기본값
+                appId: "1:307617869427:web:20a35dc705cc3fc3854406" // 기본값
             };
         }
 
         // Firebase 설정 유효성 검사
         function validateFirebaseConfig(config) {
-            const required = ['apiKey', 'authDomain', 'databaseURL', 'projectId', 'messagingSenderId', 'appId'];
+            const required = ['apiKey', 'databaseURL', 'projectId'];
             
             for (const field of required) {
                 if (!config[field]) {
@@ -1734,7 +1824,7 @@
               todayMissions: []
             };
             
-            await addDoc(collection(db, 'classes'), classDoc);
+            await addDoc(collection(window.firebaseDb, 'classes'), classDoc);
             
             console.log('새 수업 생성 완료:', classId);
             return {
@@ -1753,7 +1843,7 @@
         async function getTeacherDashboardData(classId) {
           try {
             const progressQuery = query(
-              collection(db, 'studentProgress'),
+              collection(window.firebaseDb, 'studentProgress'),
               where('classId', '==', classId)
             );
             
@@ -1783,7 +1873,7 @@
         async function getStudentData(studentId, classId) {
           try {
             const progressQuery = query(
-              collection(db, 'studentProgress'),
+              collection(window.firebaseDb, 'studentProgress'),
               where('classId', '==', classId),
               where('studentId', '==', studentId)
             );
@@ -1797,7 +1887,7 @@
             }
             
             const messagesQuery = query(
-              collection(db, 'messages'),
+              collection(window.firebaseDb, 'messages'),
               where('classId', '==', classId),
               where('recipient', 'in', [studentId, 'all'])
             );
@@ -1839,7 +1929,7 @@
         async function updateStudentProgress(studentId, classId, missionData, helpNeeded = null) {
           try {
             const progressQuery = query(
-              collection(db, 'studentProgress'),
+              collection(window.firebaseDb, 'studentProgress'),
               where('classId', '==', classId),
               where('studentId', '==', studentId)
             );
@@ -1861,7 +1951,7 @@
             };
             
             if (progressSnapshot.empty) {
-              await setDoc(doc(collection(db, 'studentProgress')), progressData);
+              await setDoc(doc(collection(window.firebaseDb, 'studentProgress')), progressData);
             } else {
               const docRef = progressSnapshot.docs[0].ref;
               await setDoc(docRef, progressData, { merge: true });
@@ -1880,7 +1970,7 @@
         async function saveMissions(classId, missions) {
           try {
             const classQuery = query(
-              collection(db, 'classes'),
+              collection(window.firebaseDb, 'classes'),
               where('classId', '==', classId)
             );
             
@@ -1915,7 +2005,7 @@
         async function saveTodayMissions(classId, todayMissions) {
           try {
             const classQuery = query(
-              collection(db, 'classes'),
+              collection(window.firebaseDb, 'classes'),
               where('classId', '==', classId)
             );
             
@@ -1942,7 +2032,7 @@
         async function getMissions(classId) {
           try {
             const classQuery = query(
-              collection(db, 'classes'),
+              collection(window.firebaseDb, 'classes'),
               where('classId', '==', classId)
             );
             
@@ -1992,7 +2082,7 @@
         // 도움 요청 전송
         async function sendHelpRequest(studentId, classId) {
           try {
-            await addDoc(collection(db, 'helpRequests'), {
+            await addDoc(collection(window.firebaseDb, 'helpRequests'), {
               classId: classId,
               studentId: studentId,
               timestamp: serverTimestamp(),
@@ -2000,7 +2090,7 @@
             });
             
             const progressQuery = query(
-              collection(db, 'studentProgress'),
+              collection(window.firebaseDb, 'studentProgress'),
               where('classId', '==', classId),
               where('studentId', '==', studentId)
             );
@@ -2025,7 +2115,7 @@
         // 메시지 전송
         async function sendMessage(classId, recipient, message) {
           try {
-            await addDoc(collection(db, 'messages'), {
+            await addDoc(collection(window.firebaseDb, 'messages'), {
               classId: classId,
               recipient: recipient,
               message: message,
@@ -2045,7 +2135,7 @@
         // 실시간 알림 전송
         async function sendRealtimeNotification(classId, type, data = {}) {
           try {
-            await addDoc(collection(db, 'notifications'), {
+            await addDoc(collection(window.firebaseDb, 'notifications'), {
               classId: classId,
               type: type,
               timestamp: serverTimestamp(),
@@ -2062,7 +2152,7 @@
         // 실시간 알림 구독
         function subscribeToNotifications(classId, callback) {
           const notificationsQuery = query(
-            collection(db, 'notifications'),
+            collection(window.firebaseDb, 'notifications'),
             where('classId', '==', classId)
           );
           
@@ -2088,7 +2178,7 @@
         // 실시간 진행상황 구독
         function subscribeToProgressUpdates(classId, callback) {
           const progressQuery = query(
-            collection(db, 'studentProgress'),
+            collection(window.firebaseDb, 'studentProgress'),
             where('classId', '==', classId)
           );
           
@@ -2125,7 +2215,7 @@
             async function deleteCollection(collectionName, description) {
               try {
                 const q = query(
-                  collection(db, collectionName),
+                  collection(window.firebaseDb, collectionName),
                   where('classId', '==', classId)
                 );
                 
@@ -2171,7 +2261,7 @@
         async function getActiveSessions() {
           try {
             const classesQuery = query(
-              collection(db, 'classes'),
+              collection(window.firebaseDb, 'classes'),
               orderBy('createdAt', 'desc')
             );
             
@@ -2209,7 +2299,7 @@
         async function saveMissionMemo(studentId, classId, missionId, memoContent) {
           try {
             const classQuery = query(
-              collection(db, 'classes'),
+              collection(window.firebaseDb, 'classes'),
               where('classId', '==', classId)
             );
             
@@ -2225,7 +2315,7 @@
             }
             
             const progressQuery = query(
-              collection(db, 'studentProgress'),
+              collection(window.firebaseDb, 'studentProgress'),
               where('classId', '==', classId),
               where('studentId', '==', studentId)
             );
@@ -2262,7 +2352,7 @@
               lastUpdate: new Date()
             });
             
-            await addDoc(collection(db, 'studentMemos'), {
+            await addDoc(collection(window.firebaseDb, 'studentMemos'), {
               classId: classId,
               studentId: studentId,
               missionId: missionId,
@@ -2302,6 +2392,17 @@
         
         console.log('Firebase 모듈들 로드 완료');
         
+        // 모든 필요한 함수들을 전역으로 노출
+        window.isFirebaseInitialized = true; // 기본적으로 true로 설정
+        window.firebaseConfig = firebaseConfig;
+        window.autoInitializeFirebase = autoInitializeFirebase;
+        window.initializeFirebase = initializeFirebase;
+        window.loadSavedFirebaseConfig = loadSavedFirebaseConfig;
+        window.saveFirebaseConfigToStorage = saveFirebaseConfigToStorage;
+        window.updateFirebaseStatus = updateFirebaseStatus;
+        window.getFirebaseConfigFromForm = getFirebaseConfigFromForm;
+        window.validateFirebaseConfig = validateFirebaseConfig;
+        
         // 함수들이 제대로 로드되었는지 확인
         window.addEventListener('load', () => {
             console.log('window.classProgressFunctions:', window.classProgressFunctions);
@@ -2324,6 +2425,28 @@
         let missions = {};
         let lastUpdateTime = null;
         let isVisible = true;
+
+        // Firebase 자동 초기화 함수
+        async function autoInitializeFirebase() {
+            try {
+                console.log('Firebase 자동 초기화 시작...');
+                
+                // Firebase 모듈이 로드될 때까지 대기
+                let attempts = 0;
+                while (!window.classProgressFunctions && attempts < 50) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    attempts++;
+                }
+                
+                if (window.classProgressFunctions) {
+                    console.log('✅ Firebase 자동 초기화 완료');
+                } else {
+                    console.warn('⚠️ Firebase 초기화 실패 - 타임아웃');
+                }
+            } catch (error) {
+                console.error('Firebase 자동 초기화 오류:', error);
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', async function() {
             // Firebase 자동 초기화
@@ -2449,11 +2572,11 @@
             currentTab = tabName;
         }
 
-        function openQRModal() {
+        window.openQRModal = function openQRModal() {
             // Firebase 설정이 없으면 QR 코드 생성 불가
-            if (!isFirebaseInitialized || !firebaseConfig) {
+            if (!window.isFirebaseInitialized || !window.firebaseConfig) {
                 alert('❌ Firebase 설정이 필요합니다. 먼저 Firebase 설정을 완료해주세요.');
-                openFirebaseConfigModal();
+                window.openFirebaseConfigModal();
                 return;
             }
 
@@ -2473,7 +2596,7 @@
             
             // Firebase 설정을 Base64로 인코딩하여 URL에 포함
             try {
-                const configString = JSON.stringify(firebaseConfig);
+                const configString = JSON.stringify(window.firebaseConfig);
                 const encodedConfig = btoa(configString); // Base64 인코딩
                 urlParams.append('config', encodedConfig);
             } catch (error) {
@@ -2823,7 +2946,7 @@
                         if (student.helpNeeded === 'YES') {
                             resolveHelp(student.studentId);
                         } else {
-                            openStudentDetailModal(student.studentId, false);
+                            openStudentMessageModal(student.studentId, false);
                         }
                     });
                 } else {
@@ -2891,7 +3014,7 @@
                         if (groupData.helpNeeded === 'YES') {
                             resolveHelp(groupData.studentId);
                         } else {
-                            openStudentDetailModal(groupData.studentId, true);
+                            openStudentMessageModal(groupData.studentId, true);
                         }
                     });
                 } else {
@@ -3018,33 +3141,75 @@
         }
 
         async function deleteMission(missionId) {
-            const missionToDelete = allMissions.find(m => m.id === missionId);
-            if (!missionToDelete) return;
+            // ID를 정수로 변환
+            const numericMissionId = parseInt(missionId);
+            console.log('deleteMission 함수 호출됨:', missionId, '->', numericMissionId);
             
-            if (confirm(`"${missionToDelete.text}" 미션을 삭제하시겠습니까?\n\n⚠️ 이 작업은 되돌릴 수 없습니다.`)) {
+            const missionToDelete = allMissions.find(m => m.id === numericMissionId);
+            console.log('찾은 미션:', missionToDelete);
+            
+            if (!missionToDelete) {
+                console.error('삭제할 미션을 찾을 수 없음:', numericMissionId);
+                console.log('현재 allMissions IDs:', allMissions.map(m => m.id));
+                return;
+            }
+            
+            console.log('confirm 대화상자 표시 전');
+            const userConfirmed = confirm(`"${missionToDelete.text}" 미션을 삭제하시겠습니까?\n\n⚠️ 이 작업은 되돌릴 수 없습니다.`);
+            console.log('사용자 선택:', userConfirmed);
+            
+            if (userConfirmed) {
+                console.log('삭제 프로세스 시작');
+                
                 // 로컬에서 제거
-                allMissions = allMissions.filter(m => m.id !== missionId);
-                todayMissions.delete(missionId);
+                console.log('삭제 전 allMissions 개수:', allMissions.length);
+                allMissions = allMissions.filter(m => m.id !== numericMissionId);
+                console.log('삭제 후 allMissions 개수:', allMissions.length);
+                
+                console.log('삭제 전 todayMissions:', Array.from(todayMissions));
+                todayMissions.delete(numericMissionId);
+                console.log('삭제 후 todayMissions:', Array.from(todayMissions));
+                
+                // todayMissions에서도 삭제된 미션 ID보다 큰 모든 ID를 1씩 감소
+                const newTodayMissions = new Set();
+                todayMissions.forEach(id => {
+                    if (id < numericMissionId) {
+                        newTodayMissions.add(id);
+                    } else if (id > numericMissionId) {
+                        newTodayMissions.add(id - 1);
+                    }
+                });
+                todayMissions.clear();
+                newTodayMissions.forEach(id => todayMissions.add(id));
+                console.log('ID 재정렬 후 todayMissions:', Array.from(todayMissions));
                 
                 // ID 재정렬 (선택사항 - 기존 방식 유지)
                 allMissions.forEach((mission, index) => {
                     mission.id = index + 1;
                 });
+                console.log('ID 재정렬 완료');
                 
                 // 화면 업데이트
+                console.log('화면 업데이트 시작');
                 updateMissionDisplay();
+                console.log('화면 업데이트 완료');
                 
                 // Firebase에 저장
                 const classId = getCurrentClassId();
+                console.log('현재 클래스 ID:', classId);
                 if (classId) {
                     try {
+                        console.log('Firebase 저장 시작');
                         await window.classProgressFunctions.saveMissions(classId, allMissions);
                         await window.classProgressFunctions.saveTodayMissions(classId, Array.from(todayMissions));
-                        console.log('미션 삭제됨:', missionToDelete);
+                        console.log('미션 삭제 완료:', missionToDelete);
                     } catch (error) {
                         console.error('미션 삭제 저장 실패:', error);
                     }
                 }
+                console.log('deleteMission 함수 완료');
+            } else {
+                console.log('사용자가 삭제를 취소함');
             }
         }
 
@@ -3277,7 +3442,7 @@
             try {
                 const { ref, set } = window.firebaseFunctions;
                 const realtimeDb = window.realtimeDb;
-                const notificationRef = ref(realtimeDb, `classes/${currentClassId}/notifications`);
+                const notificationRef = ref(window.realtimeDb, `classes/${currentClassId}/notifications`);
                 
                 const notification = {
                     type: type,
@@ -3896,6 +4061,51 @@
             }
         }
         
+        // Firebase 설정 모달 관리
+        function openFirebaseConfigModal() {
+            // 현재 저장된 설정이 있다면 불러오기
+            loadFirebaseConfig();
+            document.getElementById('firebaseConfigModal').style.display = 'block';
+        }
+        
+        function closeFirebaseConfigModal() {
+            document.getElementById('firebaseConfigModal').style.display = 'none';
+        }
+        
+        function loadFirebaseConfig() {
+            // localStorage에서 기존 설정 불러오기
+            const savedApiKey = localStorage.getItem('firebase_apiKey') || '';
+            const savedProjectId = localStorage.getItem('firebase_projectId') || '';
+            const savedDatabaseUrl = localStorage.getItem('firebase_databaseUrl') || '';
+            
+            document.getElementById('firebaseApiKey').value = savedApiKey;
+            document.getElementById('firebaseProjectId').value = savedProjectId;
+            document.getElementById('firebaseDatabaseURL').value = savedDatabaseUrl;
+        }
+        
+        function saveFirebaseConfig() {
+            const apiKey = document.getElementById('firebaseApiKey').value.trim();
+            const projectId = document.getElementById('firebaseProjectId').value.trim();
+            const databaseUrl = document.getElementById('firebaseDatabaseURL').value.trim();
+            
+            if (!apiKey || !projectId || !databaseUrl) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+            
+            // localStorage에 설정 저장
+            localStorage.setItem('firebase_apiKey', apiKey);
+            localStorage.setItem('firebase_projectId', projectId);
+            localStorage.setItem('firebase_databaseUrl', databaseUrl);
+            
+            // 자동 생성되는 값들
+            const authDomain = `${projectId}.firebaseapp.com`;
+            const storageBucket = `${projectId}.firebasestorage.app`;
+            
+            alert(`Firebase 설정이 저장되었습니다!\n\n자동 생성된 설정:\n• Auth Domain: ${authDomain}\n• Storage Bucket: ${storageBucket}\n\n페이지를 새로고침하여 새 설정을 적용하세요.`);
+            closeFirebaseConfigModal();
+        }
+
         // 학생 상세 정보 모달 관리
         let currentViewingStudent = null;
         
@@ -3917,6 +4127,25 @@
             document.getElementById('studentDetailModal').style.display = 'none';
             currentViewingStudent = null;
         }
+
+        // 학생 메시지 모달 관리
+        function openStudentMessageModal(studentId, isGroup = false) {
+            currentViewingStudent = { id: studentId, isGroup };
+            
+            const studentLabel = isGroup ? `${studentId}조` : `${studentId}번`;
+            document.getElementById('studentMessageTitle').textContent = `${studentLabel} 메시지`;
+            
+            // 메시지 로드
+            loadStudentMessages(studentId, isGroup);
+            
+            // 모달 표시
+            document.getElementById('studentMessageModal').style.display = 'flex';
+        }
+
+        function closeStudentMessageModal() {
+            document.getElementById('studentMessageModal').style.display = 'none';
+        }
+
         
         async function loadStudentMessages(studentId, isGroup = false) {
             try {
@@ -3958,24 +4187,33 @@
                 
             } catch (error) {
                 console.error('학생 메시지 로드 실패:', error);
-                document.getElementById('studentMessagesList').innerHTML = 
-                    '<div class="empty-message">메시지를 불러오는데 실패했습니다.</div>';
+                const container = document.getElementById('studentMessagesList');
+                if (container) {
+                    container.innerHTML = '<div class="empty-message">메시지를 불러오는데 실패했습니다.</div>';
+                }
             }
         }
         
         function displayStudentMessages(messages, unreadCount) {
             const container = document.getElementById('studentMessagesList');
             const countBadge = document.getElementById('unreadMessageCount');
-            const markAllBtn = document.getElementById('markAllReadBtn');
             
-            // 미읽음 카운트 표시
-            if (unreadCount > 0) {
-                countBadge.textContent = unreadCount;
+            // null 체크 - 요소가 존재하지 않으면 함수 종료
+            if (!container) {
+                console.error('studentMessagesList 요소를 찾을 수 없습니다');
+                return;
+            }
+            if (!countBadge) {
+                console.error('unreadMessageCount 요소를 찾을 수 없습니다');
+                return;
+            }
+            
+            // 메시지 누적 카운트 표시 (항상 표시)
+            if (messages.length > 0) {
+                countBadge.textContent = messages.length;
                 countBadge.style.display = 'inline-flex';
-                markAllBtn.style.display = 'inline-block';
             } else {
                 countBadge.style.display = 'none';
-                markAllBtn.style.display = 'none';
             }
             
             if (messages.length === 0) {
@@ -3985,16 +4223,13 @@
             
             let html = '';
             messages.forEach(message => {
-                const readStatus = message.isRead ? '읽음' : '미읽음';
-                const readClass = message.isRead ? 'read' : 'unread';
                 const typeText = message.missionText || '메시지';
                 
                 html += `
-                    <div class="message-item ${readClass}" data-message-id="${message.id}">
+                    <div class="message-item" data-message-id="${message.id}">
                         <div class="message-header">
                             <span class="message-type">[${typeText}]</span>
                             <span class="message-date">${message.timestamp.toLocaleString('ko-KR')}</span>
-                            <span class="message-status ${readClass}">${readStatus}</span>
                         </div>
                         <div class="message-content">${message.content}</div>
                     </div>
@@ -4004,6 +4239,8 @@
             container.innerHTML = html;
         }
         
+        // 더 이상 사용하지 않는 함수 - 메시지 읽기 처리 제거됨
+        /*
         async function markMessageAsRead(messageId) {
             try {
                 const { doc, updateDoc } = window.firebaseFunctions;
@@ -4050,116 +4287,8 @@
             }
         }
         
-        function updateUnreadMessageCount() {
-            const unreadMessages = document.querySelectorAll('.message-item.unread');
-            const countBadge = document.getElementById('unreadMessageCount');
-            const markAllBtn = document.getElementById('markAllReadBtn');
-            const unreadCount = unreadMessages.length;
-            
-            if (unreadCount > 0) {
-                countBadge.textContent = unreadCount;
-                countBadge.style.display = 'inline-flex';
-                markAllBtn.style.display = 'inline-block';
-            } else {
-                countBadge.style.display = 'none';
-                markAllBtn.style.display = 'none';
-            }
-        }
+        */
         
-        async function markAllMessagesAsRead() {
-            console.log('markAllMessagesAsRead 호출됨, window.currentViewingStudent:', window.currentViewingStudent);
-            
-            if (!window.currentViewingStudent || !window.currentViewingStudent.id) {
-                console.error('window.currentViewingStudent가 설정되지 않음');
-                alert('학생 정보가 설정되지 않았습니다.');
-                return;
-            }
-            
-            try {
-                // dashboard.js의 markAllMemosAsRead 함수를 호출
-                if (typeof markAllMemosAsRead === 'function') {
-                    await markAllMemosAsRead();
-                } else {
-                    console.error('markAllMemosAsRead 함수를 찾을 수 없습니다.');
-                    alert('메모 읽음 처리 함수를 찾을 수 없습니다.');
-                }
-            } catch (error) {
-                console.error('일괄 읽음 처리 실패:', error);
-                alert('메모 읽음 처리에 실패했습니다: ' + error.message);
-            }
-        }
-        
-        // 레거시 함수 - 실제로는 dashboard.js의 markAllMemosAsRead를 사용
-        async function markAllMessagesAsReadLegacy() {
-            if (!currentViewingStudent) {
-                console.error('currentViewingStudent가 null입니다.');
-                return;
-            }
-            
-            const unreadMessages = document.querySelectorAll('.message-item.unread');
-            const confirmMessage = `미읽음 메시지 ${unreadMessages.length}개를 모두 읽음 처리하시겠습니까?`;
-            
-            if (!confirm(confirmMessage)) return;
-            
-            try {
-                const { doc, updateDoc } = window.firebaseFunctions;
-                const promises = [];
-                
-                // 모든 미읽음 메시지를 읽음으로 처리
-                unreadMessages.forEach(messageElement => {
-                    const messageId = messageElement.getAttribute('data-message-id');
-                    const messageRef = doc(window.firebaseDb, 'studentMemos', messageId);
-                    
-                    promises.push(updateDoc(messageRef, {
-                        isRead: true,
-                        readAt: new Date()
-                    }));
-                });
-                
-                // 모든 업데이트 실행
-                await Promise.all(promises);
-                
-                // 학생의 unreadMemos 카운트를 0으로 업데이트
-                try {
-                    const isGroup = currentViewingStudent.isGroup;
-                    const collectionName = isGroup ? 'groups' : 'students';
-                    const studentDocRef = doc(window.firebaseDb, 'classData', currentClassId, collectionName, currentViewingStudent.id.toString());
-                    
-                    await updateDoc(studentDocRef, {
-                        unreadMemos: 0
-                    });
-                } catch (updateError) {
-                    console.log('unreadMemos 업데이트 실패 (문서가 없을 수 있음):', updateError);
-                }
-                
-                // UI 업데이트
-                unreadMessages.forEach(messageElement => {
-                    messageElement.classList.remove('unread');
-                    messageElement.classList.add('read');
-                    messageElement.querySelector('.message-status').textContent = '읽음';
-                    messageElement.querySelector('.message-status').className = 'message-status read';
-                });
-                
-                // 카운트 및 버튼 업데이트
-                updateUnreadMessageCount();
-                
-                // 직접 배지 제거 (즉시 UI 업데이트)
-                const studentCard = document.getElementById(`student-${currentViewingStudent.id}`) || 
-                                  document.getElementById(`group-${currentViewingStudent.id}`);
-                if (studentCard) {
-                    const badge = studentCard.querySelector('.memo-badge');
-                    if (badge) {
-                        badge.remove();
-                    }
-                }
-                
-                alert('모든 메시지가 읽음 처리되었습니다.');
-                
-            } catch (error) {
-                console.error('일괄 읽음 처리 실패:', error);
-                alert('일괄 읽음 처리에 실패했습니다.');
-            }
-        }
         
         async function loadStudentMemos(studentId, isGroup = false) {
             try {
@@ -4249,6 +4378,21 @@
                 console.error('읽지 않은 메모 수 초기화 오류:', error);
             }
         }
+
+        // 모든 함수를 전역으로 노출 
+        window.openMessageModal = openMessageModal;
+        window.openNewClassModal = openNewClassModal; 
+        window.openLoadClassModal = openLoadClassModal;
+        window.closeModal = closeModal;
+        window.switchTab = switchTab;
+        window.addNewMission = addNewMission;
+        window.deleteMission = deleteMission;
+        window.startNewClass = startNewClass;
+        window.sendMessage = sendMessage;
+        window.switchLoadTab = switchLoadTab;
+        window.getCurrentClassId = getCurrentClassId;
+        window.loadDashboardData = loadDashboardData;
+        window.autoInitializeFirebase = autoInitializeFirebase;
     </script>
 
     <!-- 미션 상세내용 입력 모달 -->
@@ -4279,6 +4423,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- 학생 상세 정보 모달 -->
     <div class="modal-overlay" id="studentDetailModal" style="display: none;">
@@ -4317,4 +4462,5 @@
         </div>
     </div>
 </body>
+
 </html>
