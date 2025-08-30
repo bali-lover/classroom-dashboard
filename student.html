@@ -736,8 +736,11 @@
           off 
         } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js';
 
-        // Firebase 설정
-        const firebaseConfig = {
+        // URL에서 Firebase 설정 가져오기 (먼저 시도)
+        const urlFirebaseConfig = getFirebaseConfigFromUrl();
+        
+        // Firebase 설정 (URL 우선, 없으면 기본값)
+        const firebaseConfig = urlFirebaseConfig || {
           apiKey: "AIzaSyBV1IFHlWjQ6ftVmnhX74YITKWCdsjdZLM",
           authDomain: "classroom-progress.firebaseapp.com",
           databaseURL: "https://classroom-progress-default-rtdb.asia-southeast1.firebasedatabase.app/",
@@ -746,6 +749,8 @@
           messagingSenderId: "307617869427",
           appId: "1:307617869427:web:20a35dc705cc3fc3854406"
         };
+
+        console.log('사용 중인 Firebase 설정:', urlFirebaseConfig ? 'URL에서 로드됨' : '기본 설정 사용', firebaseConfig.projectId);
 
         // Firebase 앱 초기화
         const app = initializeApp(firebaseConfig);
@@ -1115,6 +1120,24 @@
         function getClassIdFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get('classId');
+        }
+        
+        // URL에서 Firebase 설정 가져오기
+        function getFirebaseConfigFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const configParam = urlParams.get('config');
+            
+            if (configParam) {
+                try {
+                    // Base64 디코딩하여 Firebase 설정 복원
+                    const configString = atob(configParam);
+                    return JSON.parse(configString);
+                } catch (error) {
+                    console.error('URL Firebase 설정 파싱 오류:', error);
+                    return null;
+                }
+            }
+            return null;
         }
         const contentWrapper = document.getElementById('content-wrapper');
         const mainContainer = document.getElementById('mainContainer');
